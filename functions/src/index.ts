@@ -84,7 +84,7 @@ app.post('/loginWithEmail', (req: Request, res: Response) => {
 app.post('/registerWithEmail', (req: Request, res: Response) => {
   const newUser = req.body
   createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
-    .then((data) => {
+    .then(() => {
       return res.status(201).json({ general: 'User Created' })
     })
     .catch((err) => {
