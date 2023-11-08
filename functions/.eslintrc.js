@@ -1,32 +1,35 @@
 module.exports = {
   root: true,
-  env: {
-    es6: true,
-    node: true,
-  },
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
   extends: [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "google",
-    "plugin:@typescript-eslint/recommended",
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
   ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
-    sourceType: "module",
-  },
-  ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
+  overrides: [
+    // Tests
+    {
+      files: ['**/*.test.tsx', '**/*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+
+    // Main
+    {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+      files: ['**/*.ts'],
+      excludedFiles: '*/__tests__/*',
+      rules: {
+        '@typescript-eslint/no-floating-promises': [
+          'error',
+          { ignoreVoid: false },
+        ],
+      },
+    },
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
-  rules: {
-    "quotes": ["error", "double"],
-    "import/no-unresolved": 0,
-    "indent": ["error", 2],
-  },
-};
+}
