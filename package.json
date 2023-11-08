@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "firebase": "^10.5.2"
+  },
+  "scripts": {
+    "build": "cd functions && npm run build",
+    "lint": "eslint '*/**/*.{ts,tsx}' --fix"
   }
 }
