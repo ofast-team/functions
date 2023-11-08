@@ -1,12 +1,11 @@
 {
   "dependencies": {
-    "eslint": "^8.53.0",
     "firebase": "^10.5.2",
     "typescript-eslint": "^0.0.1-alpha.0"
   },
   "scripts": {
     "build": "cd functions && npm run build",
-    "lint": "eslint '*/**/*.{ts,tsx}' --fix"
+    "lint": "eslint '*/**/*.ts' --fix"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.10.0"
