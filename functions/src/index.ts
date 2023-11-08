@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 
-import express, { Express } from 'express'
+import express, { Express, Request, Response } from 'express'
 const app: Express = express()
 
 admin.initializeApp()
@@ -46,7 +46,7 @@ app.use(
 import * as firebase from 'firebase/app'
 firebase.initializeApp(firebaseConfig)
 
-app.get('/helloWorld', (req, res) => {
+app.post('/helloWorld', (req: Request, res: Response) => {
   console.log('Hello!')
   res.json({ str: 'Hello World!' })
 })
