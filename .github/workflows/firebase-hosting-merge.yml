@@ -1,0 +1,22 @@
+name: Deploy to Firebase Hosting on merge
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+      - uses: jsryudev/deploy-firebase-functions@v0.0.2
+        env:
+          FIREBASE_TOKEN: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFAST_E6866 }}'
+          FIREBASE_PROJECT: ofast-e6866
