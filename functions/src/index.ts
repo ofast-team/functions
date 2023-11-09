@@ -46,7 +46,11 @@ app.use(
 import { initializeApp } from 'firebase/app'
 initializeApp(firebaseConfig)
 
-// Test API
+/**
+ * Test API
+ * 
+ * @res Hello World!
+ */
 app.post('/helloWorld', (req: Request, res: Response) => {
   console.log('Hello!')
   res.json({ str: 'Hello World!' })
@@ -60,8 +64,19 @@ import {
 
 const auth = getAuth()
 
-// Login user with email
-// Expects input containing email and password
+/**
+ * API for logging in via an email and password
+ * 
+ * @req JSON containing "email" and "password" fields
+ * @res Stores the status of the request and a json containing either
+ *      the "userID" field if the request was valid, the "error" field 
+ *      if the API crashed, or the "general" field if the request was 
+ *      invalid. The following may be stored in the general field:
+ *          - Invalid Credentials: Email or Password was incorrect
+ *          - Invalid Email: The provided email is improperly formatted
+ *          - Missing Email: No email field was provided
+ *          - Missing Password: No password field was provided
+ */
 app.post('/loginWithEmail', (req: Request, res: Response) => {
   const user = req.body
   signInWithEmailAndPassword(auth, user.email, user.password)
@@ -81,6 +96,19 @@ app.post('/loginWithEmail', (req: Request, res: Response) => {
     })
 })
 
+/**
+ * API for registering via an email and password
+ * 
+ * @req JSON containing "email" and "password" fields
+ * @res Stores the status of the request and a json containing either
+ *      the "error" field if the API crashed, or the "general" field 
+ *      The following may be stored in the general field:
+ *          - User Created: The request was valid and a user was created
+ *          - Email in Use: The email provided is already tied to an account
+ *          - Invalid Email: The provided email is improperly formatted
+ *          - Missing Email: No email field was provided
+ *          - Missing Password: No password field was provided
+ */
 app.post('/registerWithEmail', (req: Request, res: Response) => {
   const newUser = req.body
   createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
