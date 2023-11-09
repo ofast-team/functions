@@ -48,7 +48,7 @@ initializeApp(firebaseConfig)
 
 /**
  * Test API
- * 
+ *
  * @res Hello World!
  */
 app.post('/helloWorld', (req: Request, res: Response) => {
@@ -66,11 +66,11 @@ const auth = getAuth()
 
 /**
  * API for logging in via an email and password
- * 
+ *
  * @req JSON containing "email" and "password" fields
  * @res Stores the status of the request and a json containing either
- *      the "userID" field if the request was valid, the "error" field 
- *      if the API crashed, or the "general" field if the request was 
+ *      the "userID" field if the request was valid, the "error" field
+ *      if the API crashed, or the "general" field if the request was
  *      invalid. The following may be stored in the general field:
  *          - Invalid Credentials: Email or Password was incorrect
  *          - Invalid Email: The provided email is improperly formatted
@@ -98,10 +98,10 @@ app.post('/loginWithEmail', (req: Request, res: Response) => {
 
 /**
  * API for registering via an email and password
- * 
+ *
  * @req JSON containing "email" and "password" fields
  * @res Stores the status of the request and a json containing either
- *      the "error" field if the API crashed, or the "general" field 
+ *      the "error" field if the API crashed, or the "general" field
  *      The following may be stored in the general field:
  *          - User Created: The request was valid and a user was created
  *          - Email in Use: The email provided is already tied to an account
