@@ -9,7 +9,9 @@
   },
   "scripts": {
     "build": "cd functions && npm run build",
-    "lint": "eslint '*/**/*.ts' --fix"
+    "lint": "eslint '*/**/*.ts' --fix",
+    "format": "npx prettier --write .",
+    "check-formatting": "npx prettier --check ."
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.10.0"
