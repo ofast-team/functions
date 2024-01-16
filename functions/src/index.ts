@@ -44,7 +44,7 @@ app.use(
 )
 
 import { initializeApp } from 'firebase/app'
-initializeApp(firebaseConfig)
+const appInit = initializeApp(firebaseConfig)
 
 /**
  * Test API
@@ -60,9 +60,12 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  Auth
 } from 'firebase/auth'
+import { getFirestore, Firestore, doc, setDoc, getDoc } from 'firebase/firestore'
 
-const auth = getAuth()
+const auth: Auth = getAuth()
+const db : Firestore = getFirestore(appInit)
 
 /**
  * API for logging in via an email and password
@@ -112,8 +115,14 @@ app.post('/loginWithEmail', (req: Request, res: Response) => {
 app.post('/registerWithEmail', (req: Request, res: Response) => {
   const newUser = req.body
   createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
-    .then(() => {
-      return res.status(201).json({ general: 'User Created' })
+    .then((data) => {
+      setDoc(doc(db, "UserData", data.user.uid), {})
+        .then((data) => {
+          return res.status(201).json({ general: 'User Created' })
+        })
+        .catch((err) => {
+          return res.status(500).json({ error: err })
+        })
     })
     .catch((err) => {
       if (err.code === 'auth/email-already-in-use')
@@ -125,6 +134,53 @@ app.post('/registerWithEmail', (req: Request, res: Response) => {
       else if (err.code === 'auth/missing-password')
         return res.status(401).json({ general: 'Missing Password' })
       else return res.status(500).json({ error: err.code })
+    })
+})
+
+/**
+ * API for retrieving user data
+ *
+ * @req JSON containing "uid" field which is the unique identifier for the user
+ * @res Stores the status of the request and a json containing either
+ *      the "error" field if the API crashed, the "general" field, or the user data
+ *      The following may be stored in the general field:
+ *          - User Data not Found: Usually means that this user was created before
+ *                                 the new database was created for user data
+ *      User data fields may include:
+ *          - email
+ *          - username
+ *          - name
+ *          - problemsAttempted
+ *          - problemsAccepted
+ *          - problemsRTE
+ *          - problemsTLE
+ *          - ProblemsWrong
+ */
+app.post('/getUserData', (req: Request, res: Response) => {
+  const userId: string = req.body.uid
+  admin.auth().getUser(userId)
+    .then((curUser) => {
+      let data = {
+        email: curUser.email,
+        username: curUser.displayName,
+      }
+
+      getDoc(doc(db, "UserData", userId))
+        .then((doc) => {
+          if(doc.exists()) {
+            data = {...data, ...doc.data()}
+            return res.status(200).json(data)
+          }
+          else {
+            return res.status(404).json({ general: 'User Data Not Found'})
+          }
+        })
+        .catch((err) => {
+          return res.status(500).json({ error: err.code })
+        })
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.code })
     })
 })
 
