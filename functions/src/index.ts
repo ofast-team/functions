@@ -162,7 +162,7 @@ app.post('/registerWithEmail', (req: Request, res: Response) => {
  *          - problemsTLE
  *          - ProblemsWrong
  */
-app.post('/getUserData', (req: Request, res: Response) => {
+app.get('/getUserData', (req: Request, res: Response) => {
   const userId: string = req.body.uid
   admin
     .auth()
