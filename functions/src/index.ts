@@ -40,7 +40,7 @@ app.use(
     origin: allowedOriginsList,
     methods: allowedMethodsList,
     allowedHeaders: allowedHeadersList,
-  }),
+  })
 )
 
 import { initializeApp } from 'firebase/app'
@@ -60,12 +60,18 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  Auth
+  Auth,
 } from 'firebase/auth'
-import { getFirestore, Firestore, doc, setDoc, getDoc } from 'firebase/firestore'
+import {
+  getFirestore,
+  Firestore,
+  doc,
+  setDoc,
+  getDoc,
+} from 'firebase/firestore'
 
 const auth: Auth = getAuth()
-const db : Firestore = getFirestore(appInit)
+const db: Firestore = getFirestore(appInit)
 
 /**
  * API for logging in via an email and password
@@ -116,8 +122,8 @@ app.post('/registerWithEmail', (req: Request, res: Response) => {
   const newUser = req.body
   createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
     .then((data) => {
-      setDoc(doc(db, "UserData", data.user.uid), {})
-        .then((data) => {
+      setDoc(doc(db, 'UserData', data.user.uid), {})
+        .then(() => {
           return res.status(201).json({ general: 'User Created' })
         })
         .catch((err) => {
@@ -158,21 +164,22 @@ app.post('/registerWithEmail', (req: Request, res: Response) => {
  */
 app.post('/getUserData', (req: Request, res: Response) => {
   const userId: string = req.body.uid
-  admin.auth().getUser(userId)
+  admin
+    .auth()
+    .getUser(userId)
     .then((curUser) => {
       let data = {
         email: curUser.email,
         username: curUser.displayName,
       }
 
-      getDoc(doc(db, "UserData", userId))
+      getDoc(doc(db, 'UserData', userId))
         .then((doc) => {
-          if(doc.exists()) {
-            data = {...data, ...doc.data()}
+          if (doc.exists()) {
+            data = { ...data, ...doc.data() }
             return res.status(200).json(data)
-          }
-          else {
-            return res.status(404).json({ general: 'User Data Not Found'})
+          } else {
+            return res.status(404).json({ general: 'User Data Not Found' })
           }
         })
         .catch((err) => {
