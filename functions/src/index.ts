@@ -40,7 +40,7 @@ app.use(
     origin: allowedOriginsList,
     methods: allowedMethodsList,
     allowedHeaders: allowedHeadersList,
-  })
+  }),
 )
 
 import { initializeApp } from 'firebase/app'
