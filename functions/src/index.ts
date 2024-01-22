@@ -44,7 +44,7 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 })
 
 import { emailLogin, emailRegister } from './user'
-import { getUserData } from './userData'
+import { getUserData, updateUserData } from './userData'
 
 /**
  * API for logging in via an email and password
@@ -96,5 +96,7 @@ app.post('/registerWithEmail', emailRegister)
  *          - ProblemsWrong
  */
 app.post('/getUserData', getUserData)
+
+app.post('/updateUserData', updateUserData)
 
 exports.api = https.onRequest(app)
