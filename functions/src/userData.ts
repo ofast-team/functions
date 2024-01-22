@@ -36,14 +36,16 @@ export function updateUserData(req: Request, res: Response) {
   const userData = req.body
   const userId: string = userData.uid
 
-  const email = userData.hasOwnProperty('email')
+  const email = Object.prototype.hasOwnProperty.call(userData, 'email')
     ? { email: userData.email }
     : {}
-  const username = userData.hasOwnProperty('username')
+  const username = Object.prototype.hasOwnProperty.call(userData, 'username')
     ? { displayName: userData.username }
     : {}
-  const name = userData.hasOwnProperty('name') ? { name: userData.name } : {}
-  const school = userData.hasOwnProperty('school')
+  const name = Object.prototype.hasOwnProperty.call(userData, 'name')
+    ? { name: userData.name }
+    : {}
+  const school = Object.prototype.hasOwnProperty.call(userData, 'school')
     ? { school: userData.school }
     : {}
 
@@ -52,7 +54,8 @@ export function updateUserData(req: Request, res: Response) {
     .updateUser(userId, email)
     .then(() => {
       let resJson = { email: 'Not Updated' }
-      if (email.hasOwnProperty('email')) resJson = { email: 'Success' }
+      if (Object.prototype.hasOwnProperty.call(email, 'email'))
+        resJson = { email: 'Success' }
       return resJson
     })
     .catch((err) => {
@@ -69,7 +72,7 @@ export function updateUserData(req: Request, res: Response) {
         .auth()
         .updateUser(userId, username)
         .then(() => {
-          if (username.hasOwnProperty('displayName'))
+          if (Object.prototype.hasOwnProperty.call(username, 'displayName'))
             resJson = { ...resJson, username: 'Success' }
           else resJson = { ...resJson, username: 'Not Updated' }
           return resJson
@@ -81,7 +84,7 @@ export function updateUserData(req: Request, res: Response) {
         .then((resJson) => {
           updateDoc(doc(db, 'UserData', userId), name)
             .then(() => {
-              if (name.hasOwnProperty('name'))
+              if (Object.prototype.hasOwnProperty.call(name, 'name'))
                 resJson = { ...resJson, name: 'Success' }
               else resJson = { ...resJson, name: 'Not Updated' }
               return resJson
@@ -93,7 +96,7 @@ export function updateUserData(req: Request, res: Response) {
             .then((resJson) => {
               updateDoc(doc(db, 'UserData', userId), school)
                 .then(() => {
-                  if (school.hasOwnProperty('school'))
+                  if (Object.prototype.hasOwnProperty.call(school, 'school'))
                     resJson = { ...resJson, school: 'Success' }
                   else resJson = { ...resJson, school: 'Not Updated' }
                   return res.status(300).json(resJson)
