@@ -74,7 +74,7 @@ export function updateUserData(req: Request, res: Response) {
           else resJson = { ...resJson, username: 'Not Updated' }
           return resJson
         })
-        .catch((err) => {
+        .catch(() => {
           resJson = { ...resJson, username: 'Internal Server Error' }
           return resJson
         })
@@ -86,7 +86,7 @@ export function updateUserData(req: Request, res: Response) {
               else resJson = { ...resJson, name: 'Not Updated' }
               return resJson
             })
-            .catch((err) => {
+            .catch(() => {
               resJson = { ...resJson, name: 'Internal Server Error' }
               return resJson
             })
@@ -98,11 +98,20 @@ export function updateUserData(req: Request, res: Response) {
                   else resJson = { ...resJson, school: 'Not Updated' }
                   return res.status(300).json(resJson)
                 })
-                .catch((err) => {
+                .catch(() => {
                   resJson = { ...resJson, school: 'Internal Server Error' }
                   return res.status(300).json(resJson)
                 })
             })
+            .catch((err) => {
+              return res.status(400).json({ error: err.code })
+            })
         })
+        .catch((err) => {
+          return res.status(400).json({ error: err.code })
+        })
+    })
+    .catch((err) => {
+      return res.status(400).json({ error: err.code })
     })
 }
