@@ -57,7 +57,7 @@ export function updateUserData(req: Request, res: Response) {
     })
     .catch((err) => {
       let resJson = {}
-      if (err.code === 'auth/email-already-in-use')
+      if (err.code === 'auth/email-already-exists')
         resJson = { email: 'Email in Use' }
       else if (err.code === 'auth/invalid-email')
         resJson = { email: 'Invalid Email' }
