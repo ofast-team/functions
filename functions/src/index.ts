@@ -45,6 +45,7 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 
 import { emailLogin, emailRegister } from './user'
 import { getUserData } from './userData'
+import { getProblemsAPI } from './getProblemsAPI'
 
 /**
  * API for logging in via an email and password
@@ -96,5 +97,14 @@ app.post('/registerWithEmail', emailRegister)
  *          - ProblemsWrong
  */
 app.post('/getUserData', getUserData)
+
+/**
+ * API for retrieving problems
+ *
+ * @req Empty
+ * @res Returns an array of Problem objects
+ *      or returns the error if the request to Octokit failed
+ */
+app.get('/getProblems', getProblemsAPI)
 
 exports.api = https.onRequest(app)
