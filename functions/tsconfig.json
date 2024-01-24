@@ -8,8 +8,8 @@
     "strict": true,
     "target": "es2017",
     "esModuleInterop": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": ["src"],
 }
