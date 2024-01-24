@@ -45,7 +45,7 @@ export async function getProblems(_req: Request, res: Response) {
         const parsedContent: Problem = JSON.parse(problemJsonContent)
         fileContentsArray.push(parsedContent)
       } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
           error:
             `Error reading or parsing 'problem.json' in ${directory}:` +
             (error as { message: string }).message,
@@ -53,12 +53,11 @@ export async function getProblems(_req: Request, res: Response) {
       }
     }
 
-    return fileContentsArray
+    return res.status(200).json(fileContentsArray)
   } catch (error) {
-    console.error(
-      'Error fetching directories:',
-      (error as { message: string }).message,
-    )
-    throw error
+    return res.status(500).json({
+      error:
+        'Error fetching directories:' + (error as { message: string }).message,
+    })
   }
 }
