@@ -3,7 +3,7 @@ import { Octokit } from '@octokit/rest'
 import type { Problem } from './Problem'
 import * as path from 'path'
 
-export async function getProblemsAPI(_req: Request, res: Response) {
+export async function getProblems(_req: Request, res: Response) {
   const octokit = new Octokit()
   const owner = 'ofast-team'
   const repo = 'problems'
