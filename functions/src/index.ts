@@ -44,7 +44,7 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 })
 
 import { emailLogin, emailRegister } from './user'
-import { getUserData } from './userData'
+import { getUserData, updateUserData } from './userData'
 
 /**
  * API for logging in via an email and password
@@ -96,5 +96,25 @@ app.post('/registerWithEmail', emailRegister)
  *          - ProblemsWrong
  */
 app.post('/getUserData', getUserData)
+
+/**
+ * API for retrieving user data
+ *
+ * @req JSON containing "uid" field which is the unique identifier for the user and
+ *      any field that is being updated from the following list
+ *          - email
+ *          - username
+ *          - name
+ *          - school
+ * @res Stores the status of the request and a field for each of the four possible
+ *      updates listed above. Each field will state:
+ *          - "No update": This field did not get updated
+ *          - "Success": The update was successful
+ *          - "Internal Server Error": Something crashed
+ *      The email field can also have the following messages:
+ *          - "Email in Use": That email is used by another account already
+ *          - "Invalid Email": The email provided is not formatted correctly
+ */
+app.post('/updateUserData', updateUserData)
 
 exports.api = https.onRequest(app)
