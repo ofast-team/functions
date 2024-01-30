@@ -99,11 +99,11 @@ export function updateUserData(req: Request, res: Response) {
                   if (Object.prototype.hasOwnProperty.call(school, 'school'))
                     resJson = { ...resJson, school: 'Success' }
                   else resJson = { ...resJson, school: 'Not Updated' }
-                  return res.status(300).json(resJson)
+                  return res.status(207).json(resJson)
                 })
                 .catch(() => {
                   resJson = { ...resJson, school: 'Internal Server Error' }
-                  return res.status(300).json(resJson)
+                  return res.status(207).json(resJson)
                 })
             })
             .catch((err) => {
