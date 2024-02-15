@@ -2,9 +2,11 @@ import { Request, Response } from 'express'
 import { Octokit } from '@octokit/rest'
 import type { Problem } from './Problem'
 import * as path from 'path'
+import { GITHUB_TOKEN } from './githubToken'
 
 export async function getProblems(_req: Request, res: Response) {
-  const octokit = new Octokit()
+  const githubToken = GITHUB_TOKEN.value()
+  const octokit = new Octokit({ auth: githubToken })
   const owner = 'ofast-team'
   const repo = 'problems'
   try {

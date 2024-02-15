@@ -1,4 +1,4 @@
-import { https } from 'firebase-functions'
+import * as functions from 'firebase-functions'
 import admin from 'firebase-admin'
 
 import express, { Express, Request, Response } from 'express'
@@ -107,4 +107,8 @@ app.post('/getUserData', getUserData)
  */
 app.get('/getProblems', getProblems)
 
-exports.api = https.onRequest(app)
+import { GITHUB_TOKEN } from './githubToken'
+
+exports.api = functions
+  .runWith({ secrets: [GITHUB_TOKEN] })
+  .https.onRequest(app)
