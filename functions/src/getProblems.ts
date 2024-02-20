@@ -1,12 +1,18 @@
 import { Request, Response } from 'express'
 import { Octokit } from '@octokit/rest'
+import { createOAuthAppAuth } from '@octokit/auth-oauth-app'
 import type { Problem } from './Problem'
 import * as path from 'path'
 import { GITHUB_TOKEN } from './githubToken'
 
 export async function getProblems(_req: Request, res: Response) {
-  const githubToken = GITHUB_TOKEN.value()
-  const octokit = new Octokit({ auth: githubToken })
+  const clientId = '5c6aac2d2c170f80bd69'
+  const githubToken = GITHUB_TOKEN.value() // rename the token
+  const auth = createOAuthAppAuth({ clientId, clientSecret: githubToken })
+  const octokit = new Octokit({
+    authStrategy: auth,
+    auth: { clientId, clientSecret: githubToken },
+  })
   const owner = 'ofast-team'
   const repo = 'problems'
   try {
