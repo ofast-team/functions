@@ -8,9 +8,8 @@ import { GITHUB_TOKEN } from './githubToken'
 export async function getProblems(_req: Request, res: Response) {
   const clientId = '5c6aac2d2c170f80bd69'
   const githubToken = GITHUB_TOKEN.value() // rename the token
-  const auth = createOAuthAppAuth({ clientId, clientSecret: githubToken })
   const octokit = new Octokit({
-    authStrategy: auth,
+    authStrategy: createOAuthAppAuth,
     auth: { clientId, clientSecret: githubToken },
   })
   const owner = 'ofast-team'
