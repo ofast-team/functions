@@ -45,6 +45,7 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 
 import { emailLogin, emailRegister } from './user'
 import { getUserData, updateUserData } from './userData'
+import { get_verdict_final, get_verdict_list, judgeIsOnline, submit } from './judge'
 
 /**
  * API for logging in via an email and password
@@ -116,5 +117,33 @@ app.post('/getUserData', getUserData)
  *          - "Invalid Email": The email provided is not formatted correctly
  */
 app.post('/updateUserData', updateUserData)
+
+/**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.get('/judgeIsOnline', judgeIsOnline)
+
+/**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.post('/submit', submit)
+
+/**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.post('/getVerdictList', get_verdict_list)
+
+/**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.post('/getVerdictFinal', get_verdict_final)
 
 exports.api = https.onRequest(app)
