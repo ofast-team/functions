@@ -45,6 +45,8 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 
 import { emailLogin, emailRegister } from './user'
 import { getUserData, updateUserData } from './userData'
+import { updateProblems } from './updateProblems'
+import { getProblems } from './getProblems'
 
 /**
  * API for logging in via an email and password
@@ -116,5 +118,23 @@ app.post('/getUserData', getUserData)
  *          - "Invalid Email": The email provided is not formatted correctly
  */
 app.post('/updateUserData', updateUserData)
+
+/**
+ * API for updateing all problems in the database
+ *
+ * @req List of problems to update
+ *
+ * @res Status of the request
+ */
+app.post('/updateProblems', updateProblems)
+
+/**
+ * API for getting all problems in the database
+ *
+ * @req None
+ *
+ * @res List of all problems in the database
+ */
+app.post('/getProblems', getProblems)
 
 exports.api = https.onRequest(app)
