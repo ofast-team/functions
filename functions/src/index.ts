@@ -47,6 +47,8 @@ import { emailLogin, emailRegister } from './user'
 import { getUserData, updateUserData } from './userData'
 import { updateProblems } from './updateProblems'
 import { getProblems } from './getProblems'
+import { updateProblemData } from './updateProblemData'
+import { getProblemData } from './getProblemData'
 
 /**
  * API for logging in via an email and password
@@ -97,7 +99,7 @@ app.post('/registerWithEmail', emailRegister)
  *          - problemsTLE
  *          - ProblemsWrong
  */
-app.post('/getUserData', getUserData)
+app.get('/getUserData', getUserData)
 
 /**
  * API for retrieving user data
@@ -135,6 +137,43 @@ app.post('/updateProblems', updateProblems)
  *
  * @res List of all problems in the database
  */
-app.post('/getProblems', getProblems)
+app.get('/getProblems', getProblems)
+
+// TODO: make docs consistent, likely by pivoting to doxygen
+
+/**
+ * API for setting a list of problem's data in the database
+ *
+ * @req JSON body of the form
+ * {
+ *   "problemID": string
+ *   "data": {
+ *     input: string // the input data file as a string
+ *     output: string // the output data file as a string
+ *    }[]
+ * }
+ *
+ * @res Status of the request
+ */
+app.post('/updateProblemData', updateProblemData)
+
+/**
+ * API for getting a problem's data from the database
+ *
+ * @req JSON body containing the problemID
+ * {
+ *   "problemID": string
+ * }
+ *
+ * @res The problem's data in the form
+ * {
+ *   "problemID": string
+ *   "data": {
+ *     input: string // the input data file as a string
+ *     output: string // the output data file as a string
+ *    }[]
+ * }
+ */
+app.get('/getProblemData', getProblemData)
 
 exports.api = https.onRequest(app)
