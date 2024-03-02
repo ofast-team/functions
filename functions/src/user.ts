@@ -15,12 +15,14 @@ export function emailLogin(req: Request, res: Response): void {
   signInWithEmailAndPassword(auth, user.email, user.password)
     .then((data) => {
       const uid = data.user.uid
+
       admin
         .auth()
         .getUser(uid)
         .then((user) => {
-          if (user.emailVerified) return res.status(200).json({ userID: uid })
-          else return res.status(403).json({ general: 'Email not verified' })
+          let isVerified = false
+          if (user.emailVerified) isVerified = true
+          return res.status(200).json({ userId: uid, isVerified: isVerified })
         })
         .catch((err) => {
           return res.status(500).json({ error: err })
@@ -37,6 +39,32 @@ export function emailLogin(req: Request, res: Response): void {
         return res.status(401).json({ general: 'Missing Password' })
       else return res.status(500).json({ error: err.code })
     })
+}
+
+export function isVerified(req: Request, res: Response): void {
+  const uid = req.body.uid
+  admin
+    .auth()
+    .getUser(uid)
+    .then((user) => {
+      return res.status(200).json({ isVerified: user.emailVerified })
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err })
+    })
+}
+
+export function sendVerificationEmail(req: Request, res: Response): void {
+  if (auth.currentUser !== null) {
+    console.log(auth.currentUser.uid)
+    sendEmailVerification(auth.currentUser)
+      .then(() => {
+        return res.status(200).json({ general: 'Verification Email Sent' })
+      })
+      .catch((err) => {
+        return res.status(500).json({ error: err })
+      })
+  } else res.status(404).json({ general: 'No User Found' })
 }
 
 export function emailRegister(req: Request, res: Response): void {
