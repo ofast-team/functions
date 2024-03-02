@@ -125,8 +125,6 @@ app.post('/updateUserData', updateUserData)
  */
 app.get('/judgeIsOnline', judgeIsOnline)
 
-
-
 /**
  * API for making a submission to the judge
  * @req JSON containing the following fields:
