@@ -135,7 +135,7 @@ app.post('/isVerified', isVerified)
  * API for checking if the current user has verified their email
  * @req Does not need any parameters
  * @res JSON containing the field "general" storing whether
- *      the user was sent a new verification email
+ *      the user was sent a new verification email or not
  */
 app.post('/sendVerificationEmail', sendVerificationEmail)
 
