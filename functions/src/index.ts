@@ -43,7 +43,12 @@ app.post('/helloWorld', (req: Request, res: Response) => {
   res.json({ str: 'Hello World!' })
 })
 
-import { emailLogin, emailRegister, isVerified, sendVerificationEmail } from './user'
+import {
+  emailLogin,
+  emailRegister,
+  isVerified,
+  sendVerificationEmail,
+} from './user'
 import { getUserData, updateUserData } from './userData'
 
 /**
