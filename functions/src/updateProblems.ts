@@ -1,14 +1,16 @@
 import type { Problem } from './Problem'
 import { Request, Response } from 'express'
-import { doc, updateDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
 import { db } from './util'
 
 export async function updateProblems(req: Request, res: Response) {
   try {
-    const problems: Problem[] = req.body.problems
+    const problems: Problem[] = req.body
     await Promise.all(
       problems.map((problem) =>
-        updateDoc(doc(db, 'Problems', problem.problemID), problem),
+        setDoc(doc(db, 'Problems', problem.problemID), problem, {
+          merge: true,
+        }),
       ),
     )
   } catch (err) {

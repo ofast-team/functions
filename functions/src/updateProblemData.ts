@@ -1,14 +1,17 @@
 import type { ProblemData } from './ProblemData'
 import { Request, Response } from 'express'
-import { doc, updateDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
 import { db } from './util'
 
 export async function updateProblemData(req: Request, res: Response) {
   try {
-    const problemData: ProblemData[] = req.body.problemData
+    const problemData: ProblemData[] = req.body
     await Promise.all(
-      problemData.map((data) =>
-        updateDoc(doc(db, 'ProblemData', data.problemID), data),
+      problemData.map(
+        (data) =>
+          setDoc(doc(db, 'ProblemData', data.problemID), data, {
+            merge: true,
+          }) /* verify the merge udpates the data correctly */,
       ),
     )
   } catch (err) {

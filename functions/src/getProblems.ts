@@ -2,6 +2,7 @@ import admin from 'firebase-admin'
 import { Request, Response } from 'express'
 import type { Problem } from './Problem'
 
+// UNTESTED
 export function getProblems(_req: Request, res: Response) {
   const db = admin.firestore()
   db.collection('Problems')

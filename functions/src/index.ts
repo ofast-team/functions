@@ -31,6 +31,7 @@ app.use(
     methods: allowedMethodsList,
     allowedHeaders: allowedHeadersList,
   }),
+  express.json(),
 )
 
 /**
