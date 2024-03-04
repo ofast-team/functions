@@ -1,3 +1,4 @@
+/*
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import { db, judge_url } from './util'
@@ -219,3 +220,4 @@ export async function get_verdict(req: Request, res: Response) {
       return res.status(500).json({ error: err })
     })
 }
+*/
