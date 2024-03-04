@@ -44,12 +44,18 @@ app.post('/helloWorld', (req: Request, res: Response) => {
   res.json({ str: 'Hello World!' })
 })
 
-import { emailLogin, emailRegister } from './user'
+import {
+  emailLogin,
+  emailRegister,
+  isVerified,
+  sendVerificationEmail,
+} from './user'
 import { getUserData, updateUserData } from './userData'
 import { updateProblems } from './updateProblems'
 import { getProblems } from './getProblems'
 import { updateProblemData } from './updateProblemData'
 import { getProblemData } from './getProblemData'
+import { get_verdict, judge_is_online, submit } from './judge'
 
 /**
  * API for logging in via an email and password
@@ -176,5 +182,53 @@ app.post('/updateProblemData', updateProblemData)
  * }
  */
 app.get('/getProblemData', getProblemData)
+
+/**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.get('/judgeIsOnline', judge_is_online)
+
+/**
+ * API for making a submission to the judge
+ * @req JSON containing the following fields:
+ *          - source_code: a base64 encoded string containing the user's code
+ *          - language_id: a string containing the file ending of the language
+ *          - inputs: an array of base64 encoded strings containing the input for the problem
+ *          - outputs: an array of base64 encoded strings containing the expected output for the user program
+ * @res JSON containing a token that can be used to retrieve the submission (or error upon errors)
+ */
+app.post('/submit', submit)
+
+/**
+ * API for getting the verdict (and other metadata) of a submission
+ * @req JSON containing the token for the submission
+ * @res JSON containing the following fields:
+ *          - date: a date object containing date/time of submission
+ *          - problem_id: (-1 by default right now)
+ *          - verdict: integer denoting the verdict
+ *          - verdict_list: array of integers denoting each test case's result
+ *          - passed_cases: integer denoting how many cases were passed
+ *          - total_cases: integer denoting how many cases total
+ */
+app.post('/getVerdict', get_verdict)
+
+/*
+ * API for checking if the current user has verified their email
+ * @req JSON containing the field "uid" storing the user id
+ * @res JSON containing the field "isVerified" storing whether
+ *      the user has verified their email (boolean)
+ */
+
+app.post('/isVerified', isVerified)
+
+/**
+ * API for checking if the current user has verified their email
+ * @req Does not need any parameters
+ * @res JSON containing the field "general" storing whether
+ *      the user was sent a new verification email or not
+ */
+app.post('/sendVerificationEmail', sendVerificationEmail)
 
 exports.api = https.onRequest(app)
