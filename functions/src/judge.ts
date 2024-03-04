@@ -3,7 +3,7 @@ import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import { db, judge_url } from './util'
 import axios from 'axios'
 
-export async function judgeIsOnline(req: Request, res: Response) {
+export async function judge_is_online(req: Request, res: Response) {
   try {
     const url = judge_url + '/about'
     const judge_res = await axios.get(url)
@@ -141,9 +141,9 @@ export async function get_verdict(req: Request, res: Response) {
   // TODO: After the submission is no longer pending, delete it :)
   let submission_id: string = req.body.token
   await getDoc(doc(db, 'Submissions', submission_id))
-    .then(async (a) => {
-      if (a.exists()) {
-        let info = a.data()
+    .then(async (submission) => {
+      if (submission.exists()) {
+        let info = submission.data()
         if (info.pending == true) {
           let token_string = ''
           for (let i = 0; i < info.tokens.length; i++) {
@@ -179,7 +179,7 @@ export async function get_verdict(req: Request, res: Response) {
             time = Math.max(time, response_list[i].time)
           }
 
-          let new_object = a.data()
+          let new_object = submission.data()
           new_object.verdict = verdict
           new_object.verdict_list = verdict_list
           new_object.time = time
@@ -188,32 +188,28 @@ export async function get_verdict(req: Request, res: Response) {
 
           updateDoc(doc(db, 'Submissions', submission_id), new_object)
             .then(() => {
-              return res
-                .status(200)
-                .json({
-                  date: new_object.date,
-                  problem_id: new_object.problem_id,
-                  verdict: verdict,
-                  verdict_list: verdict_list,
-                  passed_cases: pass_count,
-                  total_cases: new_object.total_cases,
-                })
+              return res.status(200).json({
+                date: new_object.date,
+                problem_id: new_object.problem_id,
+                verdict: verdict,
+                verdict_list: verdict_list,
+                passed_cases: pass_count,
+                total_cases: new_object.total_cases,
+              })
             })
             .catch((err) => {
               return res.status(500).json({ error: err })
             })
           return
         } else {
-          return res
-            .status(200)
-            .json({
-              date: info.date,
-              problem_id: info.problem_id,
-              verdict: info.verdict,
-              verdict_list: info.verdict_list,
-              passed_cases: info.passed_cases,
-              total_cases: info.total_cases,
-            })
+          return res.status(200).json({
+            date: info.date,
+            problem_id: info.problem_id,
+            verdict: info.verdict,
+            verdict_list: info.verdict_list,
+            passed_cases: info.passed_cases,
+            total_cases: info.total_cases,
+          })
         }
       } else {
         return res.status(404).json({ error: 'Submission id not found.' })
