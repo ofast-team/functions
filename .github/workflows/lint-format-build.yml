@@ -16,24 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Debug Local Environment
-        run: |
-          echo "Local Node.js version: $(node -v)"
-          echo "Local npm version: $(npm -v)"
-          echo "Local Prettier version: $(npx prettier --version)"
-          echo "Local Prettier configuration:"
-          cat .prettierrc
-          echo "Local Git status:"
-          git status
-          echo "Local Git diff:"
-          git diff
-        shell: bash
-
       - name: Install dependencies
         run: npm install
 

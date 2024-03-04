@@ -55,7 +55,7 @@ export async function submit(req: Request, res: Response) {
   }
 
   let compiler_flags = ''
-  const args = ''
+  let args = ''
 
   // TODO: Add time/memory limits
   // TODO: Add the submission IDs to the user's data
@@ -68,7 +68,7 @@ export async function submit(req: Request, res: Response) {
   } else if (language == 54) {
     compiler_flags = '-g -O2 -std=c++17'
   } else if (language == 62) {
-    //;(args = '-Xss64m'), '-Xmx2048m'
+    args = '-Xss64m' // TODO(Alanna): fix this line if needed (or delete this TODO)
   }
 
   const submissions: {
