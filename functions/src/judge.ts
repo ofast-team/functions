@@ -55,7 +55,7 @@ export async function submit(req: Request, res: Response) {
   }
 
   let compiler_flags = ''
-  let args = ''
+  const args = ''
 
   // TODO: Add time/memory limits
   // TODO: Add the submission IDs to the user's data
