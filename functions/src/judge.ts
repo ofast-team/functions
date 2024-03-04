@@ -1,6 +1,6 @@
-/*
 import { Request, Response } from 'express'
-import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
+//import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import { db, judge_url } from './util'
 import axios from 'axios'
 
@@ -34,6 +34,7 @@ export async function judge_is_online(_req: Request, res: Response) {
   }
 }
 
+/*
 export async function submit(req: Request, res: Response) {
   const url = judge_url + '/submissions/batch?base64_encoded=true'
 
