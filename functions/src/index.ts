@@ -1,3 +1,5 @@
+// TODO: make docs consistent, likely by pivoting to doxygen
+
 import { https } from 'firebase-functions'
 import admin from 'firebase-admin'
 
@@ -31,6 +33,7 @@ app.use(
     methods: allowedMethodsList,
     allowedHeaders: allowedHeadersList,
   }),
+  express.json(),
 )
 
 /**
@@ -50,6 +53,10 @@ import {
   sendVerificationEmail,
 } from './user'
 import { getUserData, updateUserData } from './userData'
+import { updateProblems } from './updateProblems'
+import { getProblems } from './getProblems'
+import { updateProblemData } from './updateProblemData'
+import { getProblemData } from './getProblemData'
 import { get_verdict, judge_is_online, submit } from './judge'
 
 /**
@@ -122,6 +129,59 @@ app.post('/getUserData', getUserData)
  *          - "Invalid Email": The email provided is not formatted correctly
  */
 app.post('/updateUserData', updateUserData)
+
+/**
+ * API for updateing all problems in the database
+ *
+ * @req List of problems to update
+ *
+ * @res Status of the request
+ */
+app.post('/updateProblems', updateProblems)
+
+/**
+ * API for getting all problems in the database
+ *
+ * @req None
+ *
+ * @res List of all problems in the database
+ */
+app.get('/getProblems', getProblems)
+
+/**
+ * API for setting a list of problem's data in the database
+ *
+ * @req JSON body of the form
+ * {
+ *   "problemID": string
+ *   "data": {
+ *     input: string // the input data file as a string
+ *     output: string // the output data file as a string
+ *    }[]
+ * }
+ *
+ * @res Status of the request
+ */
+app.post('/updateProblemData', updateProblemData)
+
+/**
+ * API for getting a problem's data from the database
+ *
+ * @req JSON body containing the problemID
+ * {
+ *   "problemID": string
+ * }
+ *
+ * @res The problem's data in the form
+ * {
+ *   "problemID": string
+ *   "data": {
+ *     input: string // the input data file as a string
+ *     output: string // the output data file as a string
+ *    }[]
+ * }
+ */
+app.post('/getProblemData', getProblemData)
 
 /**
  * API for marking the judge as online.

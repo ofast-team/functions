@@ -3,15 +3,15 @@ import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import { db, judge_url } from './util'
 import axios from 'axios'
 
-export async function judge_is_online(req: Request, res: Response) {
+export async function judge_is_online(_req: Request, res: Response) {
   try {
     const url = judge_url + '/about'
     const judge_res = await axios.get(url)
     if (judge_res.status != 200) {
       return res.status(400).json({ status: 'The judge is not online.' })
     } else {
-      let time = new Date()
-      let updatedTime = { time: time }
+      const time = new Date()
+      const updatedTime = { time: time }
       let response = 500
       await updateDoc(doc(db, 'JudgeData', 'LastOnline'), updatedTime)
         .then(() => {
@@ -68,10 +68,10 @@ export async function submit(req: Request, res: Response) {
   } else if (language == 54) {
     compiler_flags = '-g -O2 -std=c++17'
   } else if (language == 62) {
-    ;(args = '-Xss64m'), '-Xmx2048m'
+    args = '-Xss64m' // TODO(Alanna): fix this line if needed (or delete this TODO)
   }
 
-  let submissions: {
+  const submissions: {
     source_code: string
     stdin: string
     expected_output: string
@@ -101,13 +101,13 @@ export async function submit(req: Request, res: Response) {
     })
   }
 
-  let tokens: string[] = []
+  const tokens: string[] = []
   try {
-    let judge_res = await axios.post(url, { submissions: submissions })
+    const judge_res = await axios.post(url, { submissions: submissions })
     if (judge_res.status != 201) {
       return res.status(judge_res.status).json(judge_res.data)
     } else {
-      let responses = judge_res.data
+      const responses = judge_res.data
       for (let i = 0; i < responses.length; i++) {
         if (responses[i].token != undefined) {
           tokens.push(responses[i].token)
@@ -119,7 +119,7 @@ export async function submit(req: Request, res: Response) {
   } catch (err) {
     return res.status(500).json({ error: err })
   }
-  let date = new Date()
+  const date = new Date()
   addDoc(collection(db, 'Submissions'), {
     tokens: tokens,
     pending: true,
@@ -139,11 +139,11 @@ export async function submit(req: Request, res: Response) {
 
 export async function get_verdict(req: Request, res: Response) {
   // TODO: After the submission is no longer pending, delete it :)
-  let submission_id: string = req.body.token
+  const submission_id: string = req.body.token
   await getDoc(doc(db, 'Submissions', submission_id))
     .then(async (submission) => {
       if (submission.exists()) {
-        let info = submission.data()
+        const info = submission.data()
         if (info.pending == true) {
           let token_string = ''
           for (let i = 0; i < info.tokens.length; i++) {
@@ -153,17 +153,17 @@ export async function get_verdict(req: Request, res: Response) {
             }
           }
 
-          let url =
+          const url =
             judge_url +
             '/submissions/batch?tokens=' +
             token_string +
             '&fields=status_id,time'
-          let judge_res = await axios.get(url)
+          const judge_res = await axios.get(url)
 
-          let response_list = judge_res.data.submissions
+          const response_list = judge_res.data.submissions
 
           let verdict = 0
-          let verdict_list: number[] = []
+          const verdict_list: number[] = []
           let time = 0
           let pass_count = 0
           let pending = false
@@ -179,7 +179,7 @@ export async function get_verdict(req: Request, res: Response) {
             time = Math.max(time, response_list[i].time)
           }
 
-          let new_object = submission.data()
+          const new_object = submission.data()
           new_object.verdict = verdict
           new_object.verdict_list = verdict_list
           new_object.time = time
