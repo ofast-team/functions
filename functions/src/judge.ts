@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
-//import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
-import { doc, updateDoc } from 'firebase/firestore'
+import { doc, updateDoc, addDoc, collection } from 'firebase/firestore'
 import { db, judge_url } from './util'
 import axios from 'axios'
 
@@ -34,7 +33,6 @@ export async function judge_is_online(_req: Request, res: Response) {
   }
 }
 
-/*
 export async function submit(req: Request, res: Response) {
   const url = judge_url + '/submissions/batch?base64_encoded=true'
 
@@ -139,6 +137,7 @@ export async function submit(req: Request, res: Response) {
   return
 }
 
+/*
 export async function get_verdict(req: Request, res: Response) {
   // TODO: After the submission is no longer pending, delete it :)
   const submission_id: string = req.body.token
