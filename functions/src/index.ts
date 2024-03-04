@@ -1,3 +1,5 @@
+// TODO: make docs consistent, likely by pivoting to doxygen
+
 import { https } from 'firebase-functions'
 import admin from 'firebase-admin'
 
@@ -145,8 +147,6 @@ app.post('/updateProblems', updateProblems)
  * @res List of all problems in the database
  */
 app.get('/getProblems', getProblems)
-
-// TODO: make docs consistent, likely by pivoting to doxygen
 
 /**
  * API for setting a list of problem's data in the database
