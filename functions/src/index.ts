@@ -43,7 +43,12 @@ app.post('/helloWorld', (req: Request, res: Response) => {
   res.json({ str: 'Hello World!' })
 })
 
-import { emailLogin, emailRegister } from './user'
+import {
+  emailLogin,
+  emailRegister,
+  isVerified,
+  sendVerificationEmail,
+} from './user'
 import { getUserData, updateUserData } from './userData'
 import { get_verdict, judge_is_online, submit } from './judge'
 
@@ -148,5 +153,22 @@ app.post('/submit', submit)
  *          - total_cases: integer denoting how many cases total
  */
 app.post('/getVerdict', get_verdict)
+
+/*
+ * API for checking if the current user has verified their email
+ * @req JSON containing the field "uid" storing the user id
+ * @res JSON containing the field "isVerified" storing whether
+ *      the user has verified their email (boolean)
+ */
+
+app.post('/isVerified', isVerified)
+
+/**
+ * API for checking if the current user has verified their email
+ * @req Does not need any parameters
+ * @res JSON containing the field "general" storing whether
+ *      the user was sent a new verification email or not
+ */
+app.post('/sendVerificationEmail', sendVerificationEmail)
 
 exports.api = https.onRequest(app)
