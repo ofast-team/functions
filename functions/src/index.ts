@@ -50,6 +50,7 @@ import {
   sendVerificationEmail,
 } from './user'
 import { getUserData, updateUserData } from './userData'
+import { get_verdict, judge_is_online, submit } from './judge'
 
 /**
  * API for logging in via an email and password
@@ -123,6 +124,37 @@ app.post('/getUserData', getUserData)
 app.post('/updateUserData', updateUserData)
 
 /**
+ * API for marking the judge as online.
+ * @req empty JSON
+ * @res JSON containing the field time denoting whether the time was updated
+ */
+app.get('/judgeIsOnline', judge_is_online)
+
+/**
+ * API for making a submission to the judge
+ * @req JSON containing the following fields:
+ *          - source_code: a base64 encoded string containing the user's code
+ *          - language_id: a string containing the file ending of the language
+ *          - inputs: an array of base64 encoded strings containing the input for the problem
+ *          - outputs: an array of base64 encoded strings containing the expected output for the user program
+ * @res JSON containing a token that can be used to retrieve the submission (or error upon errors)
+ */
+app.post('/submit', submit)
+
+/**
+ * API for getting the verdict (and other metadata) of a submission
+ * @req JSON containing the token for the submission
+ * @res JSON containing the following fields:
+ *          - date: a date object containing date/time of submission
+ *          - problem_id: (-1 by default right now)
+ *          - verdict: integer denoting the verdict
+ *          - verdict_list: array of integers denoting each test case's result
+ *          - passed_cases: integer denoting how many cases were passed
+ *          - total_cases: integer denoting how many cases total
+ */
+app.post('/getVerdict', get_verdict)
+
+/*
  * API for checking if the current user has verified their email
  * @req JSON containing the field "uid" storing the user id
  * @res JSON containing the field "isVerified" storing whether
