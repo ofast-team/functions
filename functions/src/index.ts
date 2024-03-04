@@ -45,7 +45,7 @@ app.post('/helloWorld', (req: Request, res: Response) => {
 
 import { emailLogin, emailRegister } from './user'
 import { getUserData, updateUserData } from './userData'
-import { get_verdict, judgeIsOnline, submit } from './judge'
+import { get_verdict, judge_is_online, submit } from './judge'
 
 /**
  * API for logging in via an email and password
@@ -123,7 +123,7 @@ app.post('/updateUserData', updateUserData)
  * @req empty JSON
  * @res JSON containing the field time denoting whether the time was updated
  */
-app.get('/judgeIsOnline', judgeIsOnline)
+app.get('/judgeIsOnline', judge_is_online)
 
 /**
  * API for making a submission to the judge
