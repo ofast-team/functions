@@ -108,7 +108,7 @@ app.post('/registerWithEmail', emailRegister)
  *          - problemsTLE
  *          - ProblemsWrong
  */
-app.get('/getUserData', getUserData)
+app.post('/getUserData', getUserData)
 
 /**
  * API for retrieving user data
@@ -181,7 +181,7 @@ app.post('/updateProblemData', updateProblemData)
  *    }[]
  * }
  */
-app.get('/getProblemData', getProblemData)
+app.post('/getProblemData', getProblemData)
 
 /**
  * API for marking the judge as online.
