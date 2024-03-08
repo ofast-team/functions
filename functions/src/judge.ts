@@ -121,6 +121,8 @@ export async function submit(req: Request, res: Response) {
   }
   const date = new Date()
   addDoc(collection(db, 'Submissions'), {
+    uid: req.body.uid,
+    sourceCode: code,
     tokens: tokens,
     pending: true,
     date: date,
