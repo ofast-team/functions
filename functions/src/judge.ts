@@ -68,7 +68,7 @@ export async function submit(req: Request, res: Response) {
   } else if (language == 54) {
     compiler_flags = '-g -O2 -std=c++17'
   } else if (language == 62) {
-    args = '-Xss64m' // TODO(Alanna): fix this line if needed (or delete this TODO)
+    args = '-Xss64m -Xmx2048m'
   }
 
   const submissions: {
