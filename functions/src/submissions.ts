@@ -6,7 +6,7 @@ export async function getSubmissions(req: Request, res: Response) {
   const pIds: string[] = req.body.problemIds
   const isBrief = req.body.isBrief
   try {
-    let allSubmissions: object[] = []
+    const allSubmissions: object[] = []
 
     const add = (submission: object) => {
       return new Promise((resolve, reject) => {
@@ -23,7 +23,6 @@ export async function getSubmissions(req: Request, res: Response) {
       pIds.map(async (pId) => {
         let submissionList: object[] = []
         const submDb = collection(db, 'Submissions')
-        console.log(uId + ' ' + pId)
         const queries = query(
           submDb,
           where('problem_id', '==', pId),
@@ -52,7 +51,6 @@ export async function getSubmissions(req: Request, res: Response) {
             submissions: submissionList,
           }
         }
-        console.log(problem)
         await add(problem)
       }),
     )
