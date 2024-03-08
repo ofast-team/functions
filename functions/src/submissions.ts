@@ -21,7 +21,7 @@ export async function getSubmissions(req: Request, res: Response) {
 
     await Promise.all(
       pIds.map(async (pId) => {
-        let submissionList: object[] = []
+        const submissionList: object[] = []
         const submDb = collection(db, 'Submissions')
         const queries = query(
           submDb,
@@ -34,10 +34,10 @@ export async function getSubmissions(req: Request, res: Response) {
 
         let problem = {}
         if (isBrief) {
-          let isSubmitted = submissionList.length > 0
+          const isSubmitted = submissionList.length > 0
           let isACed = false
           submissionList.forEach((submission) => {
-            let submissionJson = JSON.parse(JSON.stringify(submission))
+            const submissionJson = JSON.parse(JSON.stringify(submission))
             if (submissionJson.verdict == 3) isACed = true
           })
           problem = {
