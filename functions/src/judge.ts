@@ -121,11 +121,13 @@ export async function submit(req: Request, res: Response) {
   }
   const date = new Date()
   addDoc(collection(db, 'Submissions'), {
+    code: code,
     tokens: tokens,
     pending: true,
     date: date,
     problem_id: -1,
     total_cases: tokens.length,
+    language: language_string,
     verdict: 1,
   })
     .then((id) => {
@@ -157,7 +159,7 @@ export async function get_verdict(req: Request, res: Response) {
             judge_url +
             '/submissions/batch?tokens=' +
             token_string +
-            '&fields=status_id,time'
+            '&fields=status_id,time,memory'
           const judge_res = await axios.get(url)
 
           const response_list = judge_res.data.submissions
@@ -167,6 +169,7 @@ export async function get_verdict(req: Request, res: Response) {
           let time = 0
           let pass_count = 0
           let pending = false
+          let memory = 0
           for (let i = 0; i < response_list.length; i++) {
             if (response_list[i].status_id == 3) {
               pass_count++
@@ -177,6 +180,7 @@ export async function get_verdict(req: Request, res: Response) {
             verdict = Math.max(verdict, response_list[i].status_id)
             verdict_list.push(response_list[i].status_id)
             time = Math.max(time, response_list[i].time)
+            memory = Math.max(memory, response_list[i].memory)
           }
 
           const new_object = submission.data()
@@ -185,31 +189,18 @@ export async function get_verdict(req: Request, res: Response) {
           new_object.time = time
           new_object.passed_cases = pass_count
           new_object.pending = pending
+          new_object.memory = memory
 
           updateDoc(doc(db, 'Submissions', submission_id), new_object)
             .then(() => {
-              return res.status(200).json({
-                date: new_object.date,
-                problem_id: new_object.problem_id,
-                verdict: verdict,
-                verdict_list: verdict_list,
-                passed_cases: pass_count,
-                total_cases: new_object.total_cases,
-              })
+              return res.status(200).json(new_object)
             })
             .catch((err) => {
               return res.status(500).json({ error: err })
             })
           return
         } else {
-          return res.status(200).json({
-            date: info.date,
-            problem_id: info.problem_id,
-            verdict: info.verdict,
-            verdict_list: info.verdict_list,
-            passed_cases: info.passed_cases,
-            total_cases: info.total_cases,
-          })
+          return res.status(200).json(info)
         }
       } else {
         return res.status(404).json({ error: 'Submission id not found.' })
