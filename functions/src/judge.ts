@@ -34,9 +34,7 @@ export async function judge_is_online(_req: Request, res: Response) {
   }
 }
 
-async function get_data(
-  problem_id: string,
-): Promise<{
+async function get_data(problem_id: string): Promise<{
   error: any | undefined
   inputs: string[] | undefined
   outputs: string[] | undefined
@@ -52,8 +50,6 @@ async function get_data(
           inputs.push(Buffer.from(data[i].input).toString('base64'))
           outputs.push(Buffer.from(data[i].output).toString('base64'))
         }
-        console.log(inputs)
-        console.log(outputs)
         return { inputs: inputs, outputs: outputs, error: undefined }
       } else {
         return { error: 'Problem does not exist' }
