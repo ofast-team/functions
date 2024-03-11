@@ -40,8 +40,8 @@ async function get_data(problem_id: string): Promise<{
   inputs: string[] | undefined
   outputs: string[] | undefined
 }> {
-  let inputs: string[] = []
-  let outputs: string[] = []
+  const inputs: string[] = []
+  const outputs: string[] = []
   // get the data from the database
   await getDoc(doc(db, 'Problems', problem_id))
     .then((problem) => {
@@ -74,7 +74,7 @@ export async function submit(req: Request, res: Response) {
 
   let error = ''
 
-  let missing: string[] = []
+  const missing: string[] = []
   if (uid == undefined) {
     missing.push('Missing uid')
   }
@@ -104,7 +104,7 @@ export async function submit(req: Request, res: Response) {
     // problem submission
     inputs = []
     outputs = []
-    let data = await get_data(problem_id)
+    const data = await get_data(problem_id)
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
