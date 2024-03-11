@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import { db, judge_url } from './util'
+import { Buffer } from "buffer"
 import axios from 'axios'
 
 export async function judge_is_online(_req: Request, res: Response) {
@@ -37,9 +38,45 @@ export async function submit(req: Request, res: Response) {
   const url = judge_url + '/submissions/batch?base64_encoded=true'
 
   const code = req.body.source_code
-  const inputs = req.body.inputs
-  const outputs = req.body.outputs
+  let inputs = req.body.inputs
+  let outputs = req.body.outputs
   const language_string = req.body.language_id
+  const uid = req.body.uid
+  const problem_id = req.body.problem_id
+
+  let missing: string[] = []
+  if (uid == undefined) {
+    missing.push("Missing uid")
+  }
+  if (code == undefined) {
+    missing.push("Missing source_code")
+  }
+  if (language_string == undefined) {
+    missing.push("Missing language")
+  }
+
+  if (problem_id == undefined) {
+    // arbitrary submission
+
+    if (inputs == undefined) {
+      missing.push("Missing inputs array")
+    }
+
+    if (outputs == undefined) {
+      missing.push("Missing outputs array")
+    }
+    if (missing.length > 0) {
+      return res.status(400).json({ error: missing })
+    }
+
+  } else {
+    // problem submission
+    if (problem_id == undefined) {
+      missing.push("Missing problem_id")
+      return res.status(400).json({ error: missing })
+    }
+
+  }
 
   let language = 0
   if (language_string == 'c') {
@@ -61,7 +98,7 @@ export async function submit(req: Request, res: Response) {
   // TODO: Add the submission IDs to the user's data
   // TODO: For problems in the database, grab the data and use that for input/output
 
-  // C = 50, C++ = 54, Java = 62, Python: 71 (does not use pypy in default judge0)
+  // C = 50, C++ = 54, Java = 62, Python = 71 (does not use pypy in default judge0)
 
   if (language == 50) {
     compiler_flags = '-g -O2 -std=c11'
@@ -121,7 +158,7 @@ export async function submit(req: Request, res: Response) {
   }
   const date = new Date()
   addDoc(collection(db, 'Submissions'), {
-    uid: req.body.uid,
+    uid: uid,
     code: code,
     tokens: tokens,
     pending: true,
