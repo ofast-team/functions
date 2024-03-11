@@ -34,6 +34,7 @@ export async function judge_is_online(_req: Request, res: Response) {
   }
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 async function get_data(problem_id: string): Promise<{
   error: any | undefined
   inputs: string[] | undefined
