@@ -61,7 +61,7 @@ export async function submit(req: Request, res: Response) {
   // TODO: Add the submission IDs to the user's data
   // TODO: For problems in the database, grab the data and use that for input/output
 
-  // C = 50, C++ = 54, Java = 62, Python:c 71 (does not use pypy in default judge0)
+  // C = 50, C++ = 54, Java = 62, Python: 71 (does not use pypy in default judge0)
 
   if (language == 50) {
     compiler_flags = '-g -O2 -std=c11'

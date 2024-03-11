@@ -2,9 +2,9 @@ import { Request, Response } from 'express'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from './util'
 export async function getSubmissions(req: Request, res: Response) {
-  const uId = req.body.uid
+  const uId: number | string = req.body.uid
   const pIds: string[] = req.body.problemIds
-  const isBrief = req.body.isBrief
+  const isBrief: boolean = req.body.isBrief
   try {
     const allSubmissions: object[] = []
 
