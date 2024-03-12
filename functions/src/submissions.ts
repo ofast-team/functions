@@ -37,8 +37,8 @@ export async function getSubmissions(req: Request, res: Response) {
           })
         })
 
-        const isSubmitted = submissionList.length > 0
-        let isACed = submissionList.some(
+        const isSubmitted: boolean = submissionList.length > 0
+        const isACed: boolean = submissionList.some(
           (submission) => 'verdict' in submission && submission.verdict == 3,
         )
 
