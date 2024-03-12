@@ -30,24 +30,27 @@ export async function getSubmissions(req: Request, res: Response) {
         )
 
         const docs = await getDocs(queries)
-        docs.forEach((doc) => submissionList.push(doc.data()))
-
-        let problem = {}
-        if (isBrief) {
-          const isSubmitted = submissionList.length > 0
-          let isACed = false
-          submissionList.forEach((submission) => {
-            const submissionJson = JSON.parse(JSON.stringify(submission))
-            if (submissionJson.verdict == 3) isACed = true
+        docs.forEach((doc) => {
+          submissionList.push({
+            submission_id: doc.id,
+            ...doc.data(),
           })
+        })
+
+        const isSubmitted = submissionList.length > 0
+        let isACed = submissionList.some(
+          (submission) => 'verdict' in submission && submission.verdict == 3,
+        )
+
+        let problem: object = {
+          problemId: pId,
+          isSubmitted: isSubmitted,
+          isAccepted: isACed,
+        }
+
+        if (!isBrief) {
           problem = {
-            problemId: pId,
-            isSubmitted: isSubmitted,
-            isAccepted: isACed,
-          }
-        } else {
-          problem = {
-            problemId: pId,
+            ...problem,
             submissions: submissionList,
           }
         }
