@@ -193,12 +193,17 @@ app.get('/judgeIsOnline', judge_is_online)
 
 /**
  * API for making a submission to the judge
- * @req JSON containing the following fields:
+ * @req JSON containing the following fields if doing an arbitrary submit:
  *          - uid: the user id for the user who is submitting
  *          - source_code: a base64 encoded string containing the user's code
  *          - language_id: a string containing the file ending of the language
  *          - inputs: an array of base64 encoded strings containing the input for the problem
  *          - outputs: an array of base64 encoded strings containing the expected output for the user program
+ * @req JSON containing the following fields if doing a problem submit:
+ *          - uid: the user id for the user who is submitting
+ *          - source_code: a base64 encoded string containing the user's code
+ *          - language_id: a string containing the file ending of the language
+ *          - problem_id: a string containing the problem's id
  * @res JSON containing a token that can be used to retrieve the submission (or error upon errors)
  */
 app.post('/submit', submit)
