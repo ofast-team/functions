@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
-import { db, judge_url } from './util'
+import { db, judge_url, MAX_CASES } from './util'
 import { Buffer } from 'buffer'
 import axios from 'axios'
+
 
 export async function judge_is_online(_req: Request, res: Response) {
   try {
@@ -97,6 +98,7 @@ export async function submit(req: Request, res: Response) {
     if (outputs == undefined) {
       missing.push('Missing outputs array')
     }
+
     if (missing.length > 0) {
       return res.status(400).json({ error: missing })
     }
@@ -164,6 +166,12 @@ export async function submit(req: Request, res: Response) {
             .status(400)
             .json({ error: 'No inputs or expected outputs.' })
         }
+
+       if (inputs.length > MAX_CASES || outputs.length > MAX_CASES) {
+          return res
+            .status(400)
+            .json({ error: 'Too many cases (max of ' + MAX_CASES + ')'})
+       }
 
         for (let i = 0; i < inputs.length; i++) {
           submissions.push({
