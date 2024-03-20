@@ -165,7 +165,7 @@ export async function submit(req: Request, res: Response) {
             .json({ error: 'No inputs or expected outputs.' })
         }
 
-        if (inputs.length > MAX_CASES || outputs.length == MAX_CASES) {
+        if (inputs.length > MAX_CASES || outputs.length > MAX_CASES) {
           return res
             .status(400)
             .json({ error: 'Too many cases (max of ' + MAX_CASES + ')' })
