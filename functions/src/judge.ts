@@ -123,9 +123,6 @@ export async function submit(req: Request, res: Response) {
       missing.push('Missing outputs array')
     }
 
-    if (time_limit == undefined) {
-      missing.push('Missing time limit')
-    }
     if (missing.length > 0) {
       return res.status(400).json({ error: missing })
     }
