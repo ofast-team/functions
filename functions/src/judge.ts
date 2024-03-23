@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
-import { MAX_CASES, db, judge_url } from './util'
+import { MAX_CASES, MAX_TIME_LIMIT, db, judge_url } from './util'
 import { Buffer } from 'buffer'
 import axios from 'axios'
 
@@ -71,6 +71,7 @@ export async function submit(req: Request, res: Response) {
   const language_string = req.body.language_id
   const uid = req.body.uid
   let problem_id = req.body.problem_id
+  let time_limit = req.body.time_limit
 
   let error = ''
 
@@ -96,6 +97,10 @@ export async function submit(req: Request, res: Response) {
 
     if (outputs == undefined) {
       missing.push('Missing outputs array')
+    }
+
+    if (time_limit == undefined) {
+      missing.push('Missing time limit')
     }
     if (missing.length > 0) {
       return res.status(400).json({ error: missing })
@@ -150,6 +155,7 @@ export async function submit(req: Request, res: Response) {
           expected_output: string
           language_id: number
           compiler_options: string
+          cpu_time_limit: number
           command_line_arguments: string
         }[] = []
 
@@ -171,6 +177,8 @@ export async function submit(req: Request, res: Response) {
             .json({ error: 'Too many cases (max of ' + MAX_CASES + ')' })
         }
 
+        time_limit = Math.min(MAX_TIME_LIMIT, time_limit)
+
         for (let i = 0; i < inputs.length; i++) {
           submissions.push({
             source_code: code,
@@ -179,6 +187,7 @@ export async function submit(req: Request, res: Response) {
             language_id: language,
             compiler_options: compiler_flags,
             command_line_arguments: args,
+            cpu_time_limit: time_limit,
           })
         }
 
