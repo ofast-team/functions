@@ -1,6 +1,12 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
-import { MAX_CASES, MAX_TIME_LIMIT, db, judge_url } from './util'
+import {
+  DEFAULT_TIME_LIMIT,
+  MAX_CASES,
+  MAX_TIME_LIMIT,
+  db,
+  judge_url,
+} from './util'
 import { Buffer } from 'buffer'
 import axios from 'axios'
 
@@ -84,6 +90,9 @@ export async function submit(req: Request, res: Response) {
   }
   if (language_string == undefined) {
     missing.push('Missing language')
+  }
+  if (time_limit == undefined) {
+    time_limit = DEFAULT_TIME_LIMIT
   }
 
   if (problem_id == undefined) {
