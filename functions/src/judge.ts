@@ -45,27 +45,45 @@ async function get_data(problem_id: string): Promise<{
   error: any | undefined
   inputs: string[] | undefined
   outputs: string[] | undefined
+  time_limit: number | undefined
 }> {
   const inputs: string[] = []
   const outputs: string[] = []
+  let time_limit: number = 1
   // get the data from the database
   await getDoc(doc(db, 'Problems', problem_id))
     .then((problem) => {
       if (problem.exists()) {
         const data = problem.data().sampleData
+        time_limit = data.time_limit
         for (let i = 0; i < data.length; i++) {
           inputs.push(Buffer.from(data[i].input).toString('base64'))
           outputs.push(Buffer.from(data[i].output).toString('base64'))
         }
-        return { inputs: inputs, outputs: outputs, error: undefined }
+        return {
+          inputs: inputs,
+          outputs: outputs,
+          error: undefined,
+          time_limit: time_limit,
+        }
       } else {
         return { error: 'Problem does not exist' }
       }
     })
     .catch((err) => {
-      return { error: err, inputs: undefined, outputs: undefined }
+      return {
+        error: err,
+        inputs: undefined,
+        outputs: undefined,
+        time_limit: undefined,
+      }
     })
-  return { inputs: inputs, outputs: outputs, error: undefined }
+  return {
+    inputs: inputs,
+    outputs: outputs,
+    error: undefined,
+    time_limit: time_limit,
+  }
 }
 
 export async function submit(req: Request, res: Response) {
@@ -90,9 +108,6 @@ export async function submit(req: Request, res: Response) {
   }
   if (language_string == undefined) {
     missing.push('Missing language')
-  }
-  if (time_limit == undefined) {
-    time_limit = DEFAULT_TIME_LIMIT
   }
 
   if (problem_id == undefined) {
@@ -122,10 +137,15 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
+    time_limit = data.time_limit
   }
 
   if (error != '' && error != undefined) {
     return res.status(500).json({ error: 'Something went wrong...' })
+  }
+
+  if (time_limit == undefined) {
+    time_limit = DEFAULT_TIME_LIMIT
   }
 
   await getDoc(doc(db, 'UserData', uid))
