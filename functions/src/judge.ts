@@ -49,7 +49,7 @@ async function get_data(problem_id: string): Promise<{
 }> {
   const inputs: string[] = []
   const outputs: string[] = []
-  let time_limit: number = 1
+  let time_limit: number = DEFAULT_TIME_LIMIT
   // get the data from the database
   await getDoc(doc(db, 'Problems', problem_id))
     .then((problem) => {
