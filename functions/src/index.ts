@@ -59,6 +59,7 @@ import { getProblems } from './getProblems'
 import { updateProblemData } from './updateProblemData'
 import { getProblemData } from './getProblemData'
 import { get_verdict, judge_is_online, submit } from './judge'
+import { getSubmissions } from './submissions'
 
 /**
  * API for logging in via an email and password
@@ -193,11 +194,17 @@ app.get('/judgeIsOnline', judge_is_online)
 
 /**
  * API for making a submission to the judge
- * @req JSON containing the following fields:
+ * @req JSON containing the following fields if doing an arbitrary submit:
+ *          - uid: the user id for the user who is submitting
  *          - source_code: a base64 encoded string containing the user's code
  *          - language_id: a string containing the file ending of the language
  *          - inputs: an array of base64 encoded strings containing the input for the problem
  *          - outputs: an array of base64 encoded strings containing the expected output for the user program
+ * @req JSON containing the following fields if doing a problem submit:
+ *          - uid: the user id for the user who is submitting
+ *          - source_code: a base64 encoded string containing the user's code
+ *          - language_id: a string containing the file ending of the language
+ *          - problem_id: a string containing the problem's id
  * @res JSON containing a token that can be used to retrieve the submission (or error upon errors)
  */
 app.post('/submit', submit)
@@ -244,5 +251,22 @@ app.post('/sendVerificationEmail', sendVerificationEmail)
  *      the user was sent a password reset email or not
  */
 app.post('/sendPasswordResetEmail', doSendPasswordResetEmail)
+/*
+ * API for getting the submissions for each problem in a given list of problems
+ * @req JSON with the user id, the list of problemIds needed, and isBrief which
+ *      denotes whether the entire submissions is being queried for.
+ * @res A JSON file which will return a list of objects. Each of these objects
+ *      will have the field "problemId" which will be the problem identifier and
+ *      other parameters depending on the isBrief input parameter
+ *          - if isBrief is true, two addition parameters will be returned:
+ *            isSubmitted, which states whether the user has submitted on the
+ *            problem and isAccepted, which states whether the user has ACed on
+ *            the problem
+ *          - if isBrief is false, one additional parameter will be retuned:
+ *            "allSubmissions" which returns a list of all submission objects
+ *            for the current problem. Refer to the getVerdict for all information
+ *            contained in this object
+ */
+app.post('/getSubmissions', getSubmissions)
 
 exports.api = https.onRequest(app)

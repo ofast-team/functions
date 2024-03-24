@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
-import { db, judge_url } from './util'
+import { MAX_CASES, db, judge_url } from './util'
+import { Buffer } from 'buffer'
 import axios from 'axios'
 
 export async function judge_is_online(_req: Request, res: Response) {
@@ -33,106 +34,197 @@ export async function judge_is_online(_req: Request, res: Response) {
   }
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+async function get_data(problem_id: string): Promise<{
+  error: any | undefined
+  inputs: string[] | undefined
+  outputs: string[] | undefined
+}> {
+  const inputs: string[] = []
+  const outputs: string[] = []
+  // get the data from the database
+  await getDoc(doc(db, 'Problems', problem_id))
+    .then((problem) => {
+      if (problem.exists()) {
+        const data = problem.data().sampleData
+        for (let i = 0; i < data.length; i++) {
+          inputs.push(Buffer.from(data[i].input).toString('base64'))
+          outputs.push(Buffer.from(data[i].output).toString('base64'))
+        }
+        return { inputs: inputs, outputs: outputs, error: undefined }
+      } else {
+        return { error: 'Problem does not exist' }
+      }
+    })
+    .catch((err) => {
+      return { error: err, inputs: undefined, outputs: undefined }
+    })
+  return { inputs: inputs, outputs: outputs, error: undefined }
+}
+
 export async function submit(req: Request, res: Response) {
   const url = judge_url + '/submissions/batch?base64_encoded=true'
 
   const code = req.body.source_code
-  const inputs = req.body.inputs
-  const outputs = req.body.outputs
+  let inputs = req.body.inputs
+  let outputs = req.body.outputs
   const language_string = req.body.language_id
+  const uid = req.body.uid
+  let problem_id = req.body.problem_id
 
-  let language = 0
-  if (language_string == 'c') {
-    language = 50
-  } else if (language_string == 'cpp') {
-    language = 54
-  } else if (language_string == 'java') {
-    language = 62
-  } else if (language_string == 'py') {
-    language = 71
-  } else {
-    return res.status(400).json({ error: 'Invalid language' })
+  let error = ''
+
+  const missing: string[] = []
+  if (uid == undefined) {
+    missing.push('Missing uid')
+  }
+  if (code == undefined) {
+    missing.push('Missing source_code')
+  }
+  if (language_string == undefined) {
+    missing.push('Missing language')
   }
 
-  let compiler_flags = ''
-  let args = ''
+  if (problem_id == undefined) {
+    // arbitrary submission
 
-  // TODO: Add time/memory limits
-  // TODO: Add the submission IDs to the user's data
-  // TODO: For problems in the database, grab the data and use that for input/output
+    problem_id = -1
 
-  // C = 50, C++ = 54, Java = 62, Python: 71 (does not use pypy in default judge0)
-
-  if (language == 50) {
-    compiler_flags = '-g -O2 -std=c11'
-  } else if (language == 54) {
-    compiler_flags = '-g -O2 -std=c++17'
-  } else if (language == 62) {
-    args = '-Xss64m' // TODO(Alanna): fix this line if needed (or delete this TODO)
-  }
-
-  const submissions: {
-    source_code: string
-    stdin: string
-    expected_output: string
-    language_id: number
-    compiler_options: string
-    command_line_arguments: string
-  }[] = []
-
-  if (inputs.length != outputs.length) {
-    return res
-      .status(400)
-      .json({ error: 'Different number of inputs and outputs.' })
-  }
-
-  if (inputs.length == 0 || outputs.length == 0) {
-    return res.status(400).json({ error: 'No inputs or expected outputs.' })
-  }
-
-  for (let i = 0; i < inputs.length; i++) {
-    submissions.push({
-      source_code: code,
-      stdin: inputs[i],
-      expected_output: outputs[i],
-      language_id: language,
-      compiler_options: compiler_flags,
-      command_line_arguments: args,
-    })
-  }
-
-  const tokens: string[] = []
-  try {
-    const judge_res = await axios.post(url, { submissions: submissions })
-    if (judge_res.status != 201) {
-      return res.status(judge_res.status).json(judge_res.data)
-    } else {
-      const responses = judge_res.data
-      for (let i = 0; i < responses.length; i++) {
-        if (responses[i].token != undefined) {
-          tokens.push(responses[i].token)
-        } else {
-          tokens.push('')
-        }
-      }
+    if (inputs == undefined) {
+      missing.push('Missing inputs array')
     }
-  } catch (err) {
-    return res.status(500).json({ error: err })
+
+    if (outputs == undefined) {
+      missing.push('Missing outputs array')
+    }
+    if (missing.length > 0) {
+      return res.status(400).json({ error: missing })
+    }
+  } else {
+    // problem submission
+    inputs = []
+    outputs = []
+    const data = await get_data(problem_id)
+    inputs = data.inputs
+    outputs = data.outputs
+    error = data.error
   }
-  const date = new Date()
-  addDoc(collection(db, 'Submissions'), {
-    tokens: tokens,
-    pending: true,
-    date: date,
-    problem_id: -1,
-    total_cases: tokens.length,
-    verdict: 1,
-  })
-    .then((id) => {
-      return res.status(201).json({ token: id.id })
+
+  if (error != '' && error != undefined) {
+    return res.status(500).json({ error: 'Something went wrong...' })
+  }
+
+  await getDoc(doc(db, 'UserData', uid))
+    .then(async (user) => {
+      if (user.exists()) {
+        let language = 0
+        if (language_string == 'c') {
+          language = 50
+        } else if (language_string == 'cpp') {
+          language = 54
+        } else if (language_string == 'java') {
+          language = 62
+        } else if (language_string == 'py') {
+          language = 71
+        } else {
+          return res.status(400).json({ error: 'Invalid language' })
+        }
+
+        let compiler_flags = ''
+        let args = ''
+
+        // TODO: Add time/memory limits
+
+        // C = 50, C++ = 54, Java = 62, Python = 71 (does not use pypy in default judge0)
+        if (language == 50) {
+          compiler_flags = '-g -O2 -std=c11'
+        } else if (language == 54) {
+          compiler_flags = '-g -O2 -std=c++17'
+        } else if (language == 62) {
+          args = '-Xss64m -Xmx2048m'
+        }
+
+        const submissions: {
+          source_code: string
+          stdin: string
+          expected_output: string
+          language_id: number
+          compiler_options: string
+          command_line_arguments: string
+        }[] = []
+
+        if (inputs.length != outputs.length) {
+          return res
+            .status(400)
+            .json({ error: 'Different number of inputs and outputs.' })
+        }
+
+        if (inputs.length == 0 || outputs.length == 0) {
+          return res
+            .status(400)
+            .json({ error: 'No inputs or expected outputs.' })
+        }
+
+        if (inputs.length > MAX_CASES || outputs.length > MAX_CASES) {
+          return res
+            .status(400)
+            .json({ error: 'Too many cases (max of ' + MAX_CASES + ')' })
+        }
+
+        for (let i = 0; i < inputs.length; i++) {
+          submissions.push({
+            source_code: code,
+            stdin: inputs[i],
+            expected_output: outputs[i],
+            language_id: language,
+            compiler_options: compiler_flags,
+            command_line_arguments: args,
+          })
+        }
+
+        const tokens: string[] = []
+        try {
+          const judge_res = await axios.post(url, { submissions: submissions })
+          if (judge_res.status != 201) {
+            return res.status(judge_res.status).json(judge_res.data)
+          } else {
+            const responses = judge_res.data
+            for (let i = 0; i < responses.length; i++) {
+              if (responses[i].token != undefined) {
+                tokens.push(responses[i].token)
+              } else {
+                tokens.push('')
+              }
+            }
+          }
+        } catch (err) {
+          return res.status(500).json({ error: err })
+        }
+        const date = new Date()
+        addDoc(collection(db, 'Submissions'), {
+          uid: uid,
+          code: code,
+          tokens: tokens,
+          pending: true,
+          date: date,
+          problem_id: problem_id,
+          total_cases: tokens.length,
+          language: language_string,
+          verdict: 1,
+        })
+          .then((id) => {
+            return res.status(201).json({ token: id.id })
+          })
+          .catch((err) => {
+            return res.status(500).json({ error: err })
+          })
+      } else {
+        return res.status(404).json({ error: 'User does not exist.' })
+      }
+      return
     })
     .catch((err) => {
-      return res.status(500).json({ error: err })
+      return { error: err, inputs: undefined, outputs: undefined }
     })
   return
 }
@@ -157,7 +249,7 @@ export async function get_verdict(req: Request, res: Response) {
             judge_url +
             '/submissions/batch?tokens=' +
             token_string +
-            '&fields=status_id,time'
+            '&fields=status_id,time,memory'
           const judge_res = await axios.get(url)
 
           const response_list = judge_res.data.submissions
@@ -167,6 +259,7 @@ export async function get_verdict(req: Request, res: Response) {
           let time = 0
           let pass_count = 0
           let pending = false
+          let memory = 0
           for (let i = 0; i < response_list.length; i++) {
             if (response_list[i].status_id == 3) {
               pass_count++
@@ -177,6 +270,7 @@ export async function get_verdict(req: Request, res: Response) {
             verdict = Math.max(verdict, response_list[i].status_id)
             verdict_list.push(response_list[i].status_id)
             time = Math.max(time, response_list[i].time)
+            memory = Math.max(memory, response_list[i].memory)
           }
 
           const new_object = submission.data()
@@ -185,31 +279,18 @@ export async function get_verdict(req: Request, res: Response) {
           new_object.time = time
           new_object.passed_cases = pass_count
           new_object.pending = pending
+          new_object.memory = memory
 
           updateDoc(doc(db, 'Submissions', submission_id), new_object)
             .then(() => {
-              return res.status(200).json({
-                date: new_object.date,
-                problem_id: new_object.problem_id,
-                verdict: verdict,
-                verdict_list: verdict_list,
-                passed_cases: pass_count,
-                total_cases: new_object.total_cases,
-              })
+              return res.status(200).json(new_object)
             })
             .catch((err) => {
               return res.status(500).json({ error: err })
             })
           return
         } else {
-          return res.status(200).json({
-            date: info.date,
-            problem_id: info.problem_id,
-            verdict: info.verdict,
-            verdict_list: info.verdict_list,
-            passed_cases: info.passed_cases,
-            total_cases: info.total_cases,
-          })
+          return res.status(200).json(info)
         }
       } else {
         return res.status(404).json({ error: 'Submission id not found.' })
