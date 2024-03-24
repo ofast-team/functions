@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from 'firebase/auth'
 import { auth, db } from './util'
 import admin from 'firebase-admin'
@@ -65,6 +66,20 @@ export function sendVerificationEmail(req: Request, res: Response): void {
         return res.status(500).json({ error: err })
       })
   } else res.status(404).json({ general: 'No User Found' })
+}
+
+export function doSendPasswordResetEmail(req: Request, res: Response): void {
+  let email = null
+  if (req.body.isLoggedIn) email = auth.currentUser?.email
+  else email = req.body.email
+
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      return res.status(200).json({ message: 'success' })
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err })
+    })
 }
 
 export function emailRegister(req: Request, res: Response): void {
