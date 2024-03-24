@@ -80,7 +80,7 @@ export function doSendPasswordResetEmail(req: Request, res: Response): void {
       return res.status(200).json({ message: "success"})
     })
     .catch((err) => {
-      return res.status(500).json({ error: "error"})
+      return res.status(500).json({ error: err})
     })
 }
 
