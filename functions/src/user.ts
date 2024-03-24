@@ -70,17 +70,15 @@ export function sendVerificationEmail(req: Request, res: Response): void {
 
 export function doSendPasswordResetEmail(req: Request, res: Response): void {
   let email = null
-  if(req.body.isLoggedIn)
-    email = auth.currentUser?.email
-  else
-    email = req.body.email
+  if (req.body.isLoggedIn) email = auth.currentUser?.email
+  else email = req.body.email
 
   sendPasswordResetEmail(auth, email)
     .then(() => {
-      return res.status(200).json({ message: "success"})
+      return res.status(200).json({ message: 'success' })
     })
     .catch((err) => {
-      return res.status(500).json({ error: err})
+      return res.status(500).json({ error: err })
     })
 }
 
