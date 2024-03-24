@@ -51,6 +51,7 @@ import {
   emailRegister,
   isVerified,
   sendVerificationEmail,
+  doSendPasswordResetEmail,
 } from './user'
 import { getUserData, updateUserData } from './userData'
 import { updateProblems } from './updateProblems'
@@ -224,11 +225,24 @@ app.post('/getVerdict', get_verdict)
 app.post('/isVerified', isVerified)
 
 /**
- * API for checking if the current user has verified their email
+ * API for sending a user a new verification email
  * @req Does not need any parameters
  * @res JSON containing the field "general" storing whether
  *      the user was sent a new verification email or not
  */
 app.post('/sendVerificationEmail', sendVerificationEmail)
+
+/**
+ * API for sending a user an email for password reset
+ * @req JSON containing the fields "isLoggedIn" and "email"
+ *          - isLoggedIn stores whether the request was made
+ *            from an account already logged in
+ *          - email stores the email which needs to be sent
+ *            a password reset email. This field should
+ *            only be provided for users not logged in
+ * @res JSON containing the field "general" storing whether
+ *      the user was sent a password reset email or not
+ */
+app.post('/sendPasswordResetEmail', doSendPasswordResetEmail)
 
 exports.api = https.onRequest(app)
