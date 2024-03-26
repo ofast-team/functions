@@ -55,7 +55,7 @@ async function get_data(problem_id: string): Promise<{
     .then((problem) => {
       if (problem.exists()) {
         const data = problem.data().sampleData
-        time_limit = data.time_limit
+        time_limit = data.timeLimit
         for (let i = 0; i < data.length; i++) {
           inputs.push(Buffer.from(data[i].input).toString('base64'))
           outputs.push(Buffer.from(data[i].output).toString('base64'))
@@ -134,7 +134,7 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
-    time_limit = data.time_limit
+    time_limit = data.timeLimit
   }
 
   if (error != '' && error != undefined) {
