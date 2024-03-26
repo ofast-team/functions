@@ -41,9 +41,9 @@ export async function getSubmissions(req: Request, res: Response) {
 
         docs.forEach(async (curDoc) => {
           if (curDoc.data().pending) {
-            let req: Request = {} as Request
+            const req: Request = {} as Request
             req.body = { token: curDoc.id }
-            let res: Response = {} as Response
+            const res: Response = {} as Response
             await get_verdict(req, res)
           }
 
