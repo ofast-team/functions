@@ -134,7 +134,7 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
-    time_limit = data.timeLimit
+    time_limit = data.time_limit
   }
 
   if (error != '' && error != undefined) {
