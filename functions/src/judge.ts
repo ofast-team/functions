@@ -43,10 +43,10 @@ async function get_data(problem_id: string): Promise<{
   const inputs: string[] = []
   const outputs: string[] = []
   // get the data from the database
-  await getDoc(doc(db, 'Problems', problem_id))
+  await getDoc(doc(db, 'ProblemData', problem_id))
     .then((problem) => {
       if (problem.exists()) {
-        const data = problem.data().sampleData
+        const data = problem.data().data
         for (let i = 0; i < data.length; i++) {
           inputs.push(Buffer.from(data[i].input).toString('base64'))
           outputs.push(Buffer.from(data[i].output).toString('base64'))
