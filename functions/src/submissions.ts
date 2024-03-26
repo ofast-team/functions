@@ -1,5 +1,12 @@
 import { Request, Response } from 'express'
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore'
 import { db } from './util'
 import { get_verdict } from './judge'
 export async function getSubmissions(req: Request, res: Response) {
@@ -33,7 +40,7 @@ export async function getSubmissions(req: Request, res: Response) {
         const docs = await getDocs(queries)
 
         docs.forEach(async (curDoc) => {
-          if(curDoc.data().pending) {
+          if (curDoc.data().pending) {
             let req: Request = {} as Request
             req.body = { token: curDoc.id }
             let res: Response = {} as Response
@@ -42,11 +49,10 @@ export async function getSubmissions(req: Request, res: Response) {
 
           getDoc(doc(db, 'Submissions', curDoc.id))
             .then((newDoc) => {
-              if(newDoc.exists())
-                curDoc = newDoc
+              if (newDoc.exists()) curDoc = newDoc
             })
             .catch((err) => {
-              res.status(500).json({error: err})
+              res.status(500).json({ error: err })
             })
         })
 
