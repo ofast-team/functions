@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore'
 import {
+  DEFAULT_MEMORY_LIMIT,
   DEFAULT_TIME_LIMIT,
   MAX_CASES,
   MAX_TIME_LIMIT,
@@ -80,19 +81,24 @@ async function get_data(problem_id: string): Promise<{
   }
 }
 
-export async function get_time_limit(problem_id: string) {
+export async function get_limits(problem_id: string): Promise<{
+  time_limit: number,
+  memory_limit: number  
+}> {
   let time_limit = DEFAULT_TIME_LIMIT
+  let memory_limit = DEFAULT_MEMORY_LIMIT
   await getDoc(doc(db, 'Problems', problem_id))
     .then((problem) => {
       if (problem.exists()) {
         time_limit = problem.data().timeLimit
+        memory_limit = problem.data().memory_limit
       }
-      return time_limit
+      return {time_limit: time_limit, memory_limit: memory_limit}
     })
     .catch(() => {
-      return DEFAULT_TIME_LIMIT
+    return {time_limit: DEFAULT_TIME_LIMIT, memory_limit: DEFAULT_MEMORY_LIMIT}
     })
-  return time_limit
+    return {time_limit: time_limit, memory_limit: memory_limit}
 }
 
 export async function submit(req: Request, res: Response) {
@@ -105,6 +111,7 @@ export async function submit(req: Request, res: Response) {
   const uid = req.body.uid
   let problem_id = req.body.problem_id
   let time_limit = req.body.time_limit
+  let memory_limit = req.body.memory_limit
 
   let error = ''
 
@@ -143,7 +150,9 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
-    time_limit = await get_time_limit(problem_id)
+    const limits = await get_limits(problem_id)
+    time_limit = limits.time_limit
+    memory_limit = limits.memory_limit
   }
 
   if (error != '' && error != undefined) {
@@ -152,6 +161,10 @@ export async function submit(req: Request, res: Response) {
 
   if (time_limit == undefined) {
     time_limit = DEFAULT_TIME_LIMIT
+  }
+
+  if (memory_limit == undefined) {
+    memory_limit = DEFAULT_MEMORY_LIMIT
   }
 
   await getDoc(doc(db, 'UserData', uid))
