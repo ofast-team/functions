@@ -45,17 +45,14 @@ async function get_data(problem_id: string): Promise<{
   error: any | undefined
   inputs: string[] | undefined
   outputs: string[] | undefined
-  time_limit: number | undefined
 }> {
   const inputs: string[] = []
   const outputs: string[] = []
-  let time_limit: number = DEFAULT_TIME_LIMIT
   // get the data from the database
   await getDoc(doc(db, 'ProblemData', problem_id))
     .then((problem) => {
       if (problem.exists()) {
         const data = problem.data().data
-        time_limit = problem.data().timeLimit
         for (let i = 0; i < data.length; i++) {
           inputs.push(Buffer.from(data[i].input).toString('base64'))
           outputs.push(Buffer.from(data[i].output).toString('base64'))
@@ -64,7 +61,6 @@ async function get_data(problem_id: string): Promise<{
           inputs: inputs,
           outputs: outputs,
           error: undefined,
-          time_limit: time_limit,
         }
       } else {
         return { error: 'Problem does not exist' }
@@ -75,15 +71,27 @@ async function get_data(problem_id: string): Promise<{
         error: err,
         inputs: undefined,
         outputs: undefined,
-        time_limit: undefined,
       }
     })
   return {
     inputs: inputs,
     outputs: outputs,
     error: undefined,
-    time_limit: time_limit,
   }
+}
+
+export async function get_time_limit(problem_id: string) {
+  let time_limit = DEFAULT_TIME_LIMIT
+  await getDoc(doc(db, 'Problems', problem_id))
+  .then((problem) => {
+    if (problem.exists()) {
+      time_limit = problem.data().timeLimit
+    }
+    return time_limit
+  })
+  .catch((err) => {
+    return DEFAULT_TIME_LIMIT;
+  })
 }
 
 export async function submit(req: Request, res: Response) {
@@ -134,7 +142,7 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
-    time_limit = data.time_limit
+    time_limit = get_time_limit(problem_id)
   }
 
   if (error != '' && error != undefined) {
