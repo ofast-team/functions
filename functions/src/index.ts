@@ -269,4 +269,13 @@ app.post('/sendPasswordResetEmail', doSendPasswordResetEmail)
  */
 app.post('/getSubmissions', getSubmissions)
 
+import { postProblem } from './postProblem'
+
+/*
+ * API for posting a problem to the problems repository
+ * @req JSON containing the problem object
+ * @res JSON containing the status of the request
+ */
+app.post('/postProblem', postProblem)
+
 exports.api = https.onRequest(app)
