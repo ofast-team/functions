@@ -83,15 +83,15 @@ async function get_data(problem_id: string): Promise<{
 export async function get_time_limit(problem_id: string) {
   let time_limit = DEFAULT_TIME_LIMIT
   await getDoc(doc(db, 'Problems', problem_id))
-  .then((problem) => {
-    if (problem.exists()) {
-      time_limit = problem.data().timeLimit
-    }
-    return time_limit
-  })
-  .catch((err) => {
-    return DEFAULT_TIME_LIMIT;
-  })
+    .then((problem) => {
+      if (problem.exists()) {
+        time_limit = problem.data().timeLimit
+      }
+      return time_limit
+    })
+    .catch((err) => {
+      return DEFAULT_TIME_LIMIT
+    })
 }
 
 export async function submit(req: Request, res: Response) {
