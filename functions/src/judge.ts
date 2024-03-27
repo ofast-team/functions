@@ -89,7 +89,7 @@ export async function get_time_limit(problem_id: string) {
       }
       return time_limit
     })
-    .catch((err) => {
+    .catch(() => {
       return DEFAULT_TIME_LIMIT
     })
 }
