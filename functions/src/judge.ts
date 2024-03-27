@@ -82,8 +82,8 @@ async function get_data(problem_id: string): Promise<{
 }
 
 export async function get_limits(problem_id: string): Promise<{
-  time_limit: number,
-  memory_limit: number  
+  time_limit: number
+  memory_limit: number
 }> {
   let time_limit = DEFAULT_TIME_LIMIT
   let memory_limit = DEFAULT_MEMORY_LIMIT
@@ -93,12 +93,15 @@ export async function get_limits(problem_id: string): Promise<{
         time_limit = problem.data().timeLimit
         memory_limit = problem.data().memory_limit
       }
-      return {time_limit: time_limit, memory_limit: memory_limit}
+      return { time_limit: time_limit, memory_limit: memory_limit }
     })
     .catch(() => {
-    return {time_limit: DEFAULT_TIME_LIMIT, memory_limit: DEFAULT_MEMORY_LIMIT}
+      return {
+        time_limit: DEFAULT_TIME_LIMIT,
+        memory_limit: DEFAULT_MEMORY_LIMIT,
+      }
     })
-    return {time_limit: time_limit, memory_limit: memory_limit}
+  return { time_limit: time_limit, memory_limit: memory_limit }
 }
 
 export async function submit(req: Request, res: Response) {
@@ -205,6 +208,7 @@ export async function submit(req: Request, res: Response) {
           compiler_options: string
           cpu_time_limit: number
           command_line_arguments: string
+          memory_limit: number
         }[] = []
 
         if (inputs.length != outputs.length) {
@@ -236,6 +240,7 @@ export async function submit(req: Request, res: Response) {
             compiler_options: compiler_flags,
             command_line_arguments: args,
             cpu_time_limit: time_limit,
+            memory_limit: memory_limit * 1000,
           })
         }
 
