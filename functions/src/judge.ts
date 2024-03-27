@@ -92,6 +92,7 @@ export async function get_time_limit(problem_id: string) {
     .catch(() => {
       return DEFAULT_TIME_LIMIT
     })
+    return time_limit
 }
 
 export async function submit(req: Request, res: Response) {
@@ -142,7 +143,7 @@ export async function submit(req: Request, res: Response) {
     inputs = data.inputs
     outputs = data.outputs
     error = data.error
-    time_limit = get_time_limit(problem_id)
+    time_limit = await get_time_limit(problem_id)
   }
 
   if (error != '' && error != undefined) {
